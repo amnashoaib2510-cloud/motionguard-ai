@@ -196,10 +196,10 @@ if (response.data.user) {
 
           </div>
 <p className="text-center text-slate-400 mt-6">
-  Don't have an account?{" "}
+  New to MotionGuard AI?
   <Link
     to="/register"
-    className="text-cyan-400 hover:text-cyan-300 font-semibold"
+    className="ml-2 inline-block rounded-lg bg-cyan-500 px-4 py-2 text-white font-semibold hover:bg-cyan-600 transition"
   >
     Create Account
   </Link>

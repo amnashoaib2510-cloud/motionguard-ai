@@ -30,7 +30,7 @@ function Dashboard() {
   const fetchEvents = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/history"
+        "https://motionguard-ai-production.up.railway.app/api/history"
       );
 
       setEvents(res.data);

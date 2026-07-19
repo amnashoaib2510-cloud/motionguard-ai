@@ -7,7 +7,7 @@ import { ShieldCheck } from "lucide-react";
 import GlassCard from "../components/ui/GlassCard";
 import InputField from "../components/ui/InputField";
 import PrimaryButton from "../components/ui/PrimaryButton";
-
+import { Link } from "react-router-dom";
 function Login() {
 
   const navigate = useNavigate();
@@ -195,7 +195,15 @@ if (response.data.user) {
 
 
           </div>
-
+<p className="text-center text-slate-400 mt-6">
+  Don't have an account?{" "}
+  <Link
+    to="/register"
+    className="text-cyan-400 hover:text-cyan-300 font-semibold"
+  >
+    Create Account
+  </Link>
+</p>
 
         </GlassCard>
 

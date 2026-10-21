@@ -10,7 +10,9 @@ function History() {
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get("https://motionguard-ai-production.up.railway.app/api/history");
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/history`
+      );
       setEvents(res.data);
     } catch (err) {
       console.error(err);

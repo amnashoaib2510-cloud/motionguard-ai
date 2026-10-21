@@ -1,4 +1,5 @@
-import { useRef, useState, useEffect } from "react";
+
+import { useRef, useState, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
 import pixelmatch from "pixelmatch";
 import axios from "axios";
@@ -6,103 +7,117 @@ import axios from "axios";
 function Camera() {
   const webcamRef = useRef(null);
   const previousFrame = useRef(null);
+  const lastSavedAt = useRef(0);
 
   const [motion, setMotion] = useState(false);
   const [difference, setDifference] = useState(0);
 
-  const detectMotion = () => {
+  const detectMotion = useCallback(async () => {
     if (!webcamRef.current) return;
 
     const currentImage = webcamRef.current.getScreenshot();
-
     if (!currentImage) return;
 
-    if (previousFrame.current) {
-      const current = new Image();
-      const previous = new Image();
+    const previousImage = previousFrame.current;
+    previousFrame.current = currentImage;
 
-      current.src = currentImage;
-      previous.src = previousFrame.current;
+    if (!previousImage) return;
 
-      current.onload = async () => {
-        const canvas = document.createElement("canvas");
+    const loadImage = (src) =>
+      new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = src;
+      });
 
-        const ctx = canvas.getContext("2d", {
-          willReadFrequently: true,
-        });
+    try {
+      const [previous, current] = await Promise.all([
+        loadImage(previousImage),
+        loadImage(currentImage),
+      ]);
 
-        canvas.width = current.width;
-        canvas.height = current.height;
+      const width = 320;
+      const height = 240;
 
-        ctx.drawImage(previous, 0, 0);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
 
-        const previousData = ctx.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
+      const ctx = canvas.getContext("2d", {
+        willReadFrequently: true,
+      });
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!ctx) return;
 
-        ctx.drawImage(current, 0, 0);
+      ctx.drawImage(previous, 0, 0, width, height);
+      const previousData = ctx.getImageData(0, 0, width, height);
 
-        const currentData = ctx.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(current, 0, 0, width, height);
+      const currentData = ctx.getImageData(0, 0, width, height);
 
-        const diff = pixelmatch(
-          previousData.data,
-          currentData.data,
-          null,
-          canvas.width,
-          canvas.height,
-          {
-            threshold: 0.1,
-          }
-        );
+      const output = new Uint8Array(width * height * 4);
 
-        const percent = Number(
-          ((diff / (canvas.width * canvas.height)) * 100).toFixed(2)
-        );
+      const diff = pixelmatch(
+        previousData.data,
+        currentData.data,
+        output,
+        width,
+        height,
+        { threshold: 0.1 }
+      );
 
-        setDifference(percent);
+      const percent = Number(
+        ((diff / (width * height)) * 100).toFixed(2)
+      );
 
-        if (percent > 5) {
-          setMotion(true);
+      setDifference(percent);
+      console.log("Motion comparison:", percent + "%");
 
-          console.log("Motion Percentage:", percent);
-          console.log("User ID:", localStorage.getItem("userId"));
+      // Initial testing threshold
+      if (percent > 2) {
+        setMotion(true);
+
+        const userId = localStorage.getItem("userId");
+        const now = Date.now();
+
+        if (!userId) {
+          console.error("User ID missing. Please log in again.");
+        } else if (
+          import.meta.env.VITE_API_URL &&
+          now - lastSavedAt.current > 5000
+        ) {
+          lastSavedAt.current = now;
 
           try {
-            const res = await axios.post(
-              "https://motionguard-ai-production.up.railway.app/api/motion/save",
+            const response = await axios.post(
+              `${import.meta.env.VITE_API_URL}/api/motion/save`,
               {
-                user: localStorage.getItem("userId"),
+                user: userId,
                 percentage: percent,
               }
             );
 
-            console.log("Saved:", res.data);
-          } catch (err) {
-            console.log(
-              "Save Error:",
-              err.response?.data || err.message
+            console.log("Motion event saved:", response.data);
+          } catch (error) {
+            console.error(
+              "Motion save failed:",
+              error.response?.data || error.message
             );
           }
-
-          setTimeout(() => {
-            setMotion(false);
-          }, 1500);
+        } else if (!import.meta.env.VITE_API_URL) {
+          console.error("VITE_API_URL is missing.");
         }
-      };
-    }
 
-    previousFrame.current = currentImage;
-  };
+        setTimeout(() => setMotion(false), 1500);
+      } else {
+        setMotion(false);
+      }
+    } catch (error) {
+      console.error("Frame comparison failed:", error);
+    }
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -110,7 +125,7 @@ function Camera() {
     }, 2000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [detectMotion]);
 
   return (
     <div className="space-y-4">

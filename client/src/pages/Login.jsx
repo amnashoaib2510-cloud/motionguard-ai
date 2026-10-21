@@ -24,13 +24,13 @@ function Login() {
 
       setLoading(true);
 
+      
+
       const response = await axios.post(
-        "https://motionguard-ai-production.up.railway.app/api/auth/login",
-        {
-          email,
-          password,
-        }
+        `${import.meta.env.VITE_API_URL}/api/auth/login`,
+        { email, password }
       );
+
 
 
       console.log("Login Response:", response.data);

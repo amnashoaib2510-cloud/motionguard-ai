@@ -12,14 +12,14 @@ function Register() {
 
   const handleRegister = async () => {
     try {
+      
+
       const res = await axios.post(
-        "https://motionguard-ai-production.up.railway.app/api/auth/register",
-        {
-          name,
-          email,
-          password,
-        }
+        `${import.meta.env.VITE_API_URL}/api/auth/register`,
+        { name, email, password }
       );
+      
+
 
       setMessage("✅ Registration Successful");
 

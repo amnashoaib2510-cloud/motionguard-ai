@@ -29,15 +29,18 @@ function Dashboard() {
 
   const fetchEvents = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/history`
-      );
+      
+const token = localStorage.getItem("token");
 
-      setEvents(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+const res = await axios.get(
+  `${import.meta.env.VITE_API_URL}/api/history`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
 
   const todayEvents = events.filter((event) => {
     if (!event.createdAt) return false;

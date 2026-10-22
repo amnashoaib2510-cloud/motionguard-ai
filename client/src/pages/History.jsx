@@ -10,14 +10,18 @@ function History() {
 
   const fetchHistory = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/history`
-      );
-      setEvents(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+      
+const token = localStorage.getItem("token");
+
+const res = await axios.get(
+  `${import.meta.env.VITE_API_URL}/api/history`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-8">

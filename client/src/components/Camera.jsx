@@ -91,13 +91,21 @@ function Camera() {
           lastSavedAt.current = now;
 
           try {
-            const response = await axios.post(
-              `${import.meta.env.VITE_API_URL}/api/motion/save`,
-              {
-                user: userId,
-                percentage: percent,
-              }
-            );
+            
+const token = localStorage.getItem("token");
+
+const response = await axios.post(
+  `${import.meta.env.VITE_API_URL}/api/motion/save`,
+  {
+    user: userId,
+    percentage: percent,
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
             console.log("Motion event saved:", response.data);
           } catch (error) {

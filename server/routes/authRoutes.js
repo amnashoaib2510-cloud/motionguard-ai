@@ -10,18 +10,18 @@ const router = express.Router();
 
 router.post("/register", async (req, res) => {
   try {
-    console.log("========== REGISTER ==========");
-    console.log("BODY:", req.body);
-
-    const { name, email, password } = req.body;
-
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Password:", password);
+    const { name, password } = req.body;
+    const email = (req.body.email || "").trim().toLowerCase();
 
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "All fields are required",
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        message: "Password must be at least 6 characters",
       });
     }
 
@@ -41,19 +41,20 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
     });
 
-    console.log("✅ User Registered:", user);
-
+    // Never send the password (even hashed) back to the client
     res.status(201).json({
       message: "User Registered Successfully",
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
-
   } catch (error) {
-    console.log("❌ Register Error:");
-    console.log(error);
+    console.error("Register error:", error.message);
 
     res.status(500).json({
-      message: error.message,
+      message: "Registration failed. Please try again.",
     });
   }
 });
@@ -62,37 +63,35 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    console.log("========== LOGIN ==========");
-    console.log(req.body);
+    const { password } = req.body;
+    const email = (req.body.email || "").trim().toLowerCase();
 
-    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
 
     const user = await User.findOne({ email });
 
+    // Same message for both cases so attackers can't tell which emails exist
     if (!user) {
       return res.status(400).json({
-        message: "User Not Found",
+        message: "Invalid email or password",
       });
     }
 
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({
-        message: "Invalid Password",
+        message: "Invalid email or password",
       });
     }
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     res.json({
       token,
@@ -102,13 +101,11 @@ router.post("/login", async (req, res) => {
         email: user.email,
       },
     });
-
   } catch (error) {
-    console.log("❌ Login Error:");
-    console.log(error);
+    console.error("Login error:", error.message);
 
     res.status(500).json({
-      message: error.message,
+      message: "Login failed. Please try again.",
     });
   }
 });

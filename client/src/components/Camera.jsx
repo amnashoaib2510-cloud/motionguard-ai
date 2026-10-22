@@ -73,17 +73,16 @@ function Camera() {
       );
 
       setDifference(percent);
-      console.log("Motion comparison:", percent + "%");
 
       // Initial testing threshold
       if (percent > 2) {
         setMotion(true);
 
-        const userId = localStorage.getItem("userId");
+        const token = localStorage.getItem("token");
         const now = Date.now();
 
-        if (!userId) {
-          console.error("User ID missing. Please log in again.");
+        if (!token) {
+          console.error("Not logged in. Please log in again.");
         } else if (
           import.meta.env.VITE_API_URL &&
           now - lastSavedAt.current > 5000
@@ -91,23 +90,13 @@ function Camera() {
           lastSavedAt.current = now;
 
           try {
-            
-const token = localStorage.getItem("token");
-
-const response = await axios.post(
-  `${import.meta.env.VITE_API_URL}/api/motion/save`,
-  {
-    user: userId,
-    percentage: percent,
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-);
-
-            console.log("Motion event saved:", response.data);
+            // The server reads the user from the token,
+            // so only the percentage is sent.
+            await axios.post(
+              `${import.meta.env.VITE_API_URL}/api/motion/save`,
+              { percentage: percent },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
           } catch (error) {
             console.error(
               "Motion save failed:",

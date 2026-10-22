@@ -19,7 +19,21 @@
 - **Responsive UI** built with Tailwind CSS and Framer Motion
 
 ---
+## Screenshots
 
+**Login**
+
+![Login](./login.png.png)
+
+**Dashboard**
+
+![Dashboard](./dashboard.png.png)
+
+![Dashboard analytics](./dashboard1.png.png)
+
+**History**
+
+![History](./history.png.png)
 ## How Motion Detection Works
 
 1. The webcam is sampled every **2 seconds** (`react-webcam`).

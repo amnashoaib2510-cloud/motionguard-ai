@@ -58,8 +58,7 @@
 | **Frontend** | React 19, Vite, React Router, Tailwind CSS 4, Framer Motion, Recharts, Axios, react-webcam, pixelmatch |
 | **Backend** | Node.js, Express 5, Mongoose, JSON Web Tokens, bcryptjs, CORS, dotenv |
 | **Database** | MongoDB (MongoDB Atlas compatible) |
-| **Deployment** | Frontend on Vercel; backend API hosted separately and connected through `VITE_API_URL` |
-
+| **Deployment** | Vercel (frontend), Render (backend) |
 ---
 
 ## Project Structure

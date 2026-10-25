@@ -28,9 +28,9 @@
 
 **Dashboard**
 
-![Dashboard](./dashboard.png)
+![Dashboard](./dashboard0.png)
 
-![Dashboard analytics](./dashboard1.png)
+![Dashboard analytics](./dashboard.png)
 
 **History**
 

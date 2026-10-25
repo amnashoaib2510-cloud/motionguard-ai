@@ -3,6 +3,7 @@
 **A real-time, browser-based motion detection and monitoring system** built with the MERN stack. MotionGuard AI uses classical computer-vision frame differencing on a live webcam feed to detect movement, logs each event to a database, and visualizes activity on a per-user analytics dashboard.
 
 **Live Demo:** [motionguard-ai.vercel.app](https://motionguard-ai.vercel.app)
+(The backend runs on Render's free tier, so the first request may take 30-60 seconds to wake up.)
 
 ---
 
@@ -23,17 +24,18 @@
 
 **Login**
 
-![Login](./login.png.png)
+![Login](./login.png)
 
 **Dashboard**
 
-![Dashboard](./dashboard.png.png)
+![Dashboard](./dashboard.png)
 
-![Dashboard analytics](./dashboard1.png.png)
+![Dashboard analytics](./dashboard1.png)
 
 **History**
 
-![History](./history.png.png)
+![History](./history.png)
+
 ## How Motion Detection Works
 
 1. The webcam is sampled every **2 seconds** (`react-webcam`).
@@ -59,6 +61,7 @@
 | **Backend** | Node.js, Express 5, Mongoose, JSON Web Tokens, bcryptjs, CORS, dotenv |
 | **Database** | MongoDB (MongoDB Atlas compatible) |
 | **Deployment** | Vercel (frontend), Render (backend) |
+
 ---
 
 ## Project Structure

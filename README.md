@@ -24,17 +24,17 @@
 
 **Login**
 
-![Login](./login.png)
+![Login](./screenshots/login.png)
 
 **Dashboard**
 
-![Dashboard](./dashboard0.png)
+![Dashboard](./screenshots/dashboard.png)
 
-![Dashboard analytics](./dashboard.png)
+![Dashboard analytics](./screenshots/dashboard0.png)
 
 **History**
 
-![History](./history.png)
+![History](./screenshots/history.png)
 
 ## How Motion Detection Works
 
